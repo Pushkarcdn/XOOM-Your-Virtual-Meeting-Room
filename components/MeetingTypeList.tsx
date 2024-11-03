@@ -1,78 +1,78 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable camelcase */
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-import HomeCard from './HomeCard'
-import MeetingModal from './MeetingModal'
-import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk'
-import { useUser } from '@clerk/nextjs'
-import Loader from './Loader'
-import { Textarea } from './ui/textarea'
-import ReactDatePicker from 'react-datepicker'
-import { useToast } from './ui/use-toast'
-import { Input } from './ui/input'
+import HomeCard from './HomeCard';
+import MeetingModal from './MeetingModal';
+import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
+import { useUser } from '@clerk/nextjs';
+import Loader from './Loader';
+import { Textarea } from './ui/textarea';
+import ReactDatePicker from 'react-datepicker';
+import { useToast } from './ui/use-toast';
+import { Input } from './ui/input';
 
 const initialValues = {
     dateTime: new Date(),
     description: '',
-    link: ''
-}
+    link: '',
+};
 
 const MeetingTypeList = () => {
-    const router = useRouter()
+    const router = useRouter();
     const [meetingState, setMeetingState] = useState<
         | 'isScheduleMeeting'
         | 'isJoiningMeeting'
         | 'isInstantMeeting'
         | undefined
-    >(undefined)
-    const [values, setValues] = useState(initialValues)
-    const [callDetail, setCallDetail] = useState<Call>()
-    const client = useStreamVideoClient()
-    const { user } = useUser()
-    const { toast } = useToast()
+    >(undefined);
+    const [values, setValues] = useState(initialValues);
+    const [callDetail, setCallDetail] = useState<Call>();
+    const client = useStreamVideoClient();
+    const { user } = useUser();
+    const { toast } = useToast();
 
     const createMeeting = async () => {
-        if (!client || !user) return
+        if (!client || !user) return;
         try {
             if (!values.dateTime) {
-                toast({ title: 'Please select a date and time' })
-                return
+                toast({ title: 'Please select a date and time' });
+                return;
             }
-            const id = crypto.randomUUID()
-            const call = client.call('default', id)
-            if (!call) throw new Error('Failed to create meeting')
+            const id = crypto.randomUUID();
+            const call = client.call('default', id);
+            if (!call) throw new Error('Failed to create meeting');
             const startsAt =
                 values.dateTime.toISOString() ||
-                new Date(Date.now()).toISOString()
-            const description = values.description || 'Instant Meeting'
+                new Date(Date.now()).toISOString();
+            const description = values.description || 'Instant Meeting';
             await call.getOrCreate({
                 data: {
                     starts_at: startsAt,
                     custom: {
-                        description
-                    }
-                }
-            })
-            setCallDetail(call)
+                        description,
+                    },
+                },
+            });
+            setCallDetail(call);
             if (!values.description) {
-                router.push(`/meeting/${call.id}`)
+                router.push(`/meeting/${call.id}`);
             }
             toast({
-                title: 'Meeting Created'
-            })
+                title: 'Meeting Created',
+            });
         } catch (error) {
-            console.error(error)
-            toast({ title: 'Failed to create Meeting' })
+            console.error(error);
+            toast({ title: 'Failed to create Meeting' });
         }
-    }
+    };
 
-    if (!client || !user) return <Loader />
+    if (!client || !user) return <Loader />;
 
-    const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetail?.id}`
+    const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetail?.id}`;
 
     return (
         <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -120,7 +120,7 @@ const MeetingTypeList = () => {
                             onChange={e =>
                                 setValues({
                                     ...values,
-                                    description: e.target.value
+                                    description: e.target.value,
                                 })
                             }
                         />
@@ -149,8 +149,8 @@ const MeetingTypeList = () => {
                     onClose={() => setMeetingState(undefined)}
                     title="Meeting Created"
                     handleClick={() => {
-                        navigator.clipboard.writeText(meetingLink)
-                        toast({ title: 'Link Copied' })
+                        navigator.clipboard.writeText(meetingLink);
+                        toast({ title: 'Link Copied' });
                     }}
                     image={'/icons/checked.svg'}
                     buttonIcon="/icons/copy.svg"
@@ -185,7 +185,7 @@ const MeetingTypeList = () => {
                 handleClick={createMeeting}
             />
         </section>
-    )
-}
+    );
+};
 
-export default MeetingTypeList
+export default MeetingTypeList;

@@ -5,6 +5,7 @@ import { Dialog, DialogContent } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 interface MeetingModalProps {
   isOpen: boolean;
@@ -36,15 +37,16 @@ const MeetingModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex w-full max-w-[520px] flex-col gap-6 border-none bg-dark-1 px-6 py-9 text-white">
+        {/* <DialogTitle className="text-2xl font-bold">{title}</DialogTitle> */}
         <div className="flex flex-col gap-6">
           {image && (
             <div className="flex justify-center">
               <Image src={image} alt="checked" width={72} height={72} />
             </div>
           )}
-          <h1 className={cn("text-3xl font-bold leading-[42px]", className)}>
+          <DialogTitle className={cn("text-3xl font-bold leading-[42px]", className)}>
             {title}
-          </h1>
+          </DialogTitle>
           {children}
           <Button
             className={
